@@ -6,29 +6,25 @@ const initialState = {
   cartItem: [],
 };
 
-export const productSlice = createSlice({
+const productSlice = createSlice({
   name: "product",
   initialState,
   reducers: {
     setDataProduct: (state, action) => {
       state.productList = [...action.payload];
     },
-
     addCartItem: (state, action) => {
       const check = state.cartItem.some((el) => el._id === action.payload._id);
       if (check) {
-        toast("Already Item in Cart");
+        toast("Item Already in Cart");
       } else {
-        toast("Item Add successfully");
+        toast("Item successfully Already in Cart");
         const total = action.payload.price;
-        state.cartItem = [
-          ...state.cartItem,
-          { ...action.payload, qty: 1, total: total },
-        ];
+        state.cartItem.push({ ...action.payload, qty: 1, total: total });
       }
     },
     deleteCartItem: (state, action) => {
-      toast("one Item Delete");
+      toast("One Item Deleted");
       state.cartItem = state.cartItem.filter((el) => el._id !== action.payload);
     },
     increaseQty: (state, action) => {
