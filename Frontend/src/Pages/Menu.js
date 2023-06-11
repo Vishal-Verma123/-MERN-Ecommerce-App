@@ -11,6 +11,7 @@ const Menu = () => {
   const productData = useSelector((state) => state.product.productList);
 
   const productDisplay = productData.filter((el) => el._id === filterby)[0];
+  console.log(productDisplay);
 
   const handleAddCartProduct = (e) => {
     dispatch(addCartItem(productDisplay));
@@ -21,7 +22,7 @@ const Menu = () => {
     navigate("/cart");
   };
   return (
-    <div className="p-2 md:p-4">
+    <div className="p-10 md:p-14">
       <div className="w-full max-w-4xl m-auto md:flex bg-white">
         <div className="max-w-sm  overflow-hidden w-full p-5">
           <img

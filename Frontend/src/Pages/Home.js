@@ -7,11 +7,13 @@ import AllProduct from "../Components/AllProduct";
 
 const Home = () => {
   const productData = useSelector((state) => state.product.productList);
-  const homeProductCartList = productData.slice(1, 7);
+
+  const homeProductCartList = productData.slice(2, 8);
   const homeProductCartListVegetables = productData.filter(
-    (el) => el.category === "vegetable",
+    (el) => el.category === "vegetables",
     []
   );
+
   const loadingArray = new Array(6).fill(null);
   const loadingArrayFeature = new Array(10).fill(null);
 
@@ -24,7 +26,7 @@ const Home = () => {
   };
 
   return (
-    <div className="p-10 md:p-14 bg-slate-100">
+    <div className="p-2 md:p-8 bg-slate-100">
       <div className="md:flex gap-4 py-2">
         <div className="md:w-1/2">
           <div className="flex gap-2 bg-slate-300 w-36 px-2 items-center rounded-full">
@@ -53,12 +55,12 @@ const Home = () => {
             of client side scripting for placing orders by connecting to the
             server side webservice.
           </p>
-          <button className=" font-bold bg-red-500 text-slate-200 px-4 py-2 rounded my-2">
+          <button className=" font-bold bg-red-500 text-slate-200 px-4 py-2 rounded my-4">
             Order Now
           </button>
         </div>
 
-        {/* <div className="md:w-1/2 flex flex-wrap gap-3 p-14 justify item-center">
+        {/* <div className="md:w-1/2 flex flex-wrap gap-5 p-4 justify-center">
           {homeProductCartList[0]
             ? homeProductCartList.map((el) => {
                 return (
@@ -77,26 +79,59 @@ const Home = () => {
                   <HomeCard key={index + "loading"} loading={"Loading..."} />
                 );
               })}
-        </div> */}
-        <div className="md:w-1/2 p-18">
-          {homeProductCartList[0] &&
-            homeProductCartList.map((el) => {
-              return (
-                <HomeCard
-                  image={el.image}
-                  name={el.name}
-                  price={el.price}
-                  category={el.category}
-                />
-              );
-            })}
+        </div>
+      </div> */}
+
+        <div className="md:w-1/2  gap-5 p-2 justify-center">
+          <marquee direction="left" width="90%" className="h-50 flex">
+            <div className="h-50 flex">
+              {homeProductCartList
+                .slice(0, Math.ceil(homeProductCartList.length / 2))
+                .map((el) => (
+                  <HomeCard
+                    key={el._id}
+                    id={el._id}
+                    image={el.image}
+                    name={el.name}
+                    price={el.price}
+                    category={el.category}
+                    className="mr-2"
+                  />
+                ))}
+            </div>
+          </marquee>
+          <marquee direction="right" width="90%" className="h-50 flex">
+            <div className="h-50 flex my-6">
+              {homeProductCartList
+                .slice(Math.ceil(homeProductCartList.length / 2))
+                .map((el) => (
+                  <HomeCard
+                    key={el._id}
+                    id={el._id}
+                    image={el.image}
+                    name={el.name}
+                    price={el.price}
+                    category={el.category}
+                    className="mr-2"
+                  />
+                ))}
+            </div>
+          </marquee>
+
+          {homeProductCartList.length === 0 &&
+            loadingArray.map((el, index) => (
+              <HomeCard key={index + "loading"} loading={"Loading..."} />
+            ))}
         </div>
       </div>
 
-      <div className="my-2">
+      <div className="">
         <div className="flex w-full items-center">
-          <h2 className="font-bold text-2xl text-slate-800 mb-4 mt-3 ">
-            Fresh Vegetables
+          <h2 className="font-bold text-2xl text-slate-800 mb-4 my-12">
+            Fresh{" "}
+            <button className="bg-green-500 px-2 py-2 rounded cursor-text ">
+              Vegetables
+            </button>
           </h2>
           <div className="ml-auto flex gap-4">
             <button
@@ -114,29 +149,33 @@ const Home = () => {
           </div>
         </div>
         <div
-          className="flex gap-5 overflow-scroll scrollbar-none scroll-smooth transition-all"
+          className="flex gap-5 overflow-scroll scrollbar-none scroll-smooth transition-all my-2"
           ref={slideProductRef}
         >
           {homeProductCartListVegetables[0]
-            ? homeProductCartListVegetables.map((el) => {
-                return (
-                  <CardFeature
-                    key={el._id + "vegetable"}
-                    id={el._id}
-                    name={el.name}
-                    category={el.category}
-                    price={el.price}
-                    image={el.image}
-                  />
-                );
-              })
+            ? homeProductCartListVegetables.map((el) => (
+                <CardFeature
+                  key={el._id + "vegetable"}
+                  id={el._id}
+                  name={el.name}
+                  category={el.category}
+                  price={el.price}
+                  image={el.image}
+                />
+              ))
             : loadingArrayFeature.map((el, index) => (
                 <CardFeature loading="Loading..." key={index + "cartLoading"} />
               ))}
         </div>
       </div>
 
-      <AllProduct heading={"Your Product"} />
+      <h2 className="font-bold text-2xl text-slate-800 mb-4 my-12">
+        Your
+        <button className="bg-orange-500 px-2 py-2 rounded cursor-text mx-2 ">
+          Products
+        </button>
+      </h2>
+      <AllProduct />
     </div>
   );
 };

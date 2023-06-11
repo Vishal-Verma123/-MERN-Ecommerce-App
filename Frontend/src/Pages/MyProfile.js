@@ -4,25 +4,35 @@ import { Link, useNavigate } from "react-router-dom";
 import signupImg from "../pictures/login-animation.gif";
 import toast, { Toaster } from "react-hot-toast";
 import { ImagetoBase64 } from "../utility/ImagetoBase64";
+import { useDispatch, useSelector } from "react-redux";
 
-function Signup() {
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const MyProfile = () => {
+  const userData = useSelector((state) => state.user);
+  console.log(userData);
   const [data, setData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    image: "",
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    email: userData.email,
+    password: userData.password,
+    image: userData.image,
+    _id: userData._id,
   });
+  const [showPassword, setShowPassword] = useState(false);
   const handleShowPassword = () => {
     setShowPassword((preve) => !preve);
   };
-  const handleShowConfirmPassword = () => {
-    setShowConfirmPassword((preve) => !preve);
+
+  const handleUploadProfileImage = async (e) => {
+    const data = await ImagetoBase64(e.target.files[0]);
+    console.log(data);
+    setData((preve) => {
+      return {
+        ...preve,
+        image: data,
+      };
+    });
   };
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((preve) => {
@@ -33,53 +43,42 @@ function Signup() {
     });
   };
 
-  const handleUploadProfileImage = async (e) => {
-    const data = await ImagetoBase64(e.target.files[0]);
-
-    setData((preve) => {
-      return {
-        ...preve,
-        image: data,
-      };
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { firstName, email, password, confirmPassword } = data;
-    if (firstName && email && password && confirmPassword) {
-      if (password === confirmPassword) {
-        const fetchData = await fetch(
-          `${process.env.REACT_APP_SERVER_DOMAIN}/signup`,
-          {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify(data),
-          }
-        );
-        const val = await fetchData.json();
-        console.log(val);
-        // alert(val.message);
-        toast(val.message);
-        if (val.alert) {
-          navigate("/login");
+    const { firstName, email, password } = data;
+    if (firstName && email) {
+      const fetchData = await fetch(
+        `${process.env.REACT_APP_SERVER_DOMAIN}/myprofile`,
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(data),
         }
+      );
+      const val = await fetchData.json();
+      console.log(val);
+
+      if (val.alert) {
+        toast("Successfully Updated Details!!");
       } else {
-        alert("Password and confirm password does not matched");
+        toast("Something Wrong");
       }
-      // }
     } else {
       alert("Please Enter required fields");
     }
   };
+
   return (
-    <div className="p-20 md:4 bg-slate-100">
-      <div className="max-w-sm  bg-white m-auto flex  flex-col p-4 ">
-        <div className="w-20 h-20 overflow-hidden rounded-full drop-shadow-md shadow-md m-auto relative">
+    <div className="p-6 md:p-8">
+      <h2 className="text-lg md:text-2xl font-bold text-slate-600">
+        My Profile
+      </h2>
+      <div className="w-full max-w-3xl m-auto p-4 md:flex bg-white flex flex-col">
+        <div className="w-20 h-20 overflow-hidden rounded-full drop-shadow-md shadow-md m-auto relative my-4">
           <img
-            src={data.image ? data.image : signupImg}
+            src={userData.image ? userData.image : signupImg}
             className="w-full h-full"
           />
           <label htmlFor="profileImage">
@@ -96,7 +95,7 @@ function Signup() {
           </label>
         </div>
 
-        <form className="w-full py-3 flex flex-col " onSubmit={handleSubmit}>
+        <form className="w-full py-3 " onSubmit={handleSubmit}>
           <label htmlFor="firstName">First Name *</label>
           <input
             type={"text"}
@@ -105,7 +104,7 @@ function Signup() {
             placeholder="Enter your First Name"
             required
             className="mt-1 mb-2 w-full bg-slate-200 px-2 py-1 rounded focus-within:outline-blue-300"
-            value={data.firstName}
+            defaultValue={userData.firstName}
             onChange={handleOnChange}
           />
           <label htmlFor="lastName">Last Name</label>
@@ -115,7 +114,7 @@ function Signup() {
             name="lastName"
             placeholder="Enter your Last Name"
             className="mt-1 mb-2 w-full bg-slate-200 px-2 py-1 rounded focus-within:outline-blue-300"
-            value={data.lastName}
+            defaultValue={userData.lastName}
             onChange={handleOnChange}
           />
 
@@ -127,7 +126,7 @@ function Signup() {
             placeholder="Enter your Email"
             required
             className="mt-1 mb-2 w-full bg-slate-200 px-2 py-1 rounded focus-within:outline-blue-300"
-            value={data.email}
+            defaultValue={userData.email}
             onChange={handleOnChange}
           />
 
@@ -138,11 +137,10 @@ function Signup() {
               id="password"
               name="password"
               placeholder="Create a password"
-              required
               pattern="^(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,}$"
               title="Password must contain at least 1 digit, 1 letter, 1 special character, and be at least 8 characters long."
               className="w-full bg-slate-200 border-none outline-none"
-              value={data.password}
+              defaultValue={userData.password}
               onChange={handleOnChange}
             />
             <span
@@ -153,43 +151,23 @@ function Signup() {
             </span>
           </div>
 
-          <label htmlFor="confirmpassword">Confirm Password *</label>
-          <div className="flex px-2 py-1 bg-slate-200 rounded mt-1 mb-2  focus-within:outline focus-within:outline-blue-300">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              id="confirmpassword"
-              name="confirmPassword"
-              placeholder="Confirm your password"
-              required
-              className=" w-full bg-slate-200 border-none outline-none "
-              value={data.confirmPassword}
-              onChange={handleOnChange}
-            />
-            <span
-              className="flex text-xl cursor-pointer"
-              onClick={handleShowConfirmPassword}
-            >
-              {showConfirmPassword ? <BiShow /> : <BiHide />}
-            </span>
-          </div>
-
           <button
             type="submit"
-            className="w-full max-w-[135px] m-auto py-1 bg-red-500 hover:bg-red-600 cursor-pointer  text-white text-xl font-medium text-center py-1 rounded-full mt-4"
+            className="w-full max-w-[135px] m-auto py-1 bg-yellow-500 hover:bg-yellow-600 cursor-pointer  text-white text-sm font-medium text-center p-3 rounded my-2"
           >
-            Sign up
+            Update Profile
           </button>
         </form>
 
         <p className="text-left text-sm mt-2">
-          Already Registered User!! ?{" "}
-          <Link to={"/login"} className="font-bold ml-1 text-red-500 underline">
-            Login
+          Everything seems Good!{" "}
+          <Link to={"/"} className="font-bold ml-1 text-red-500 underline">
+            Explore Groceries
           </Link>
         </p>
       </div>
     </div>
   );
-}
+};
 
-export default Signup;
+export default MyProfile;

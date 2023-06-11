@@ -15,7 +15,6 @@ const Login = () => {
   });
 
   const navigate = useNavigate();
-  const userData = useSelector((state) => state);
 
   const dispatch = useDispatch();
 
@@ -54,10 +53,14 @@ const Login = () => {
         setTimeout(() => {
           navigate("/");
         }, 1000);
-
-        console.log(userData);
       } else {
         alert("Invalid Credentials");
+        setData(() => {
+          return {
+            email: "",
+            password: "",
+          };
+        });
       }
     } else {
       alert("Please Enter required fields");
@@ -116,6 +119,15 @@ const Login = () => {
             className="font-bold ml-1 text-red-500 underline"
           >
             Signup
+          </Link>
+        </p>
+        <p className="text-left text-sm mt-2">
+          Forget Password?{" "}
+          <Link
+            to={"/forget_password"}
+            className="font-bold ml-1 text-red-500 underline"
+          >
+            Forget Password
           </Link>
         </p>
       </div>
