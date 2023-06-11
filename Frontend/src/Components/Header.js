@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import logo from "../pictures/logo.jpeg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { TiShoppingCart } from "react-icons/ti";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,10 +14,14 @@ const Header = () => {
   const handleShowMenu = () => {
     setShowMenu((prev) => !prev);
   };
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logoutRedux());
     toast("Logout Successfully!!");
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
   };
 
   const cartItemNumber = useSelector((state) => state.product.cartItem);
@@ -27,17 +31,31 @@ const Header = () => {
       {/*desktop*/}
       <div className="flex items-center h-full justify-between">
         <Link to={""}>
-          <div className="h-16">
+          <div className="h-16 flex">
             <img src={logo} className="h-full" alt="Logo" />
+            <h1 className="justify-between text-slate-900 m-auto font-bold text-base md:text-2xl ">
+              The Best Online Grocery Shop
+            </h1>
           </div>
         </Link>
 
         <div className="flex items-center gap-4 md:gap-7">
           <nav className="gap-4 md:gap-6 text-base md:text-lg hidden md:flex">
-            <Link to={""}>Home</Link>
-            <Link to={"menu/63f0fdbb3bcc2f97fa53d25d"}>Menu</Link>
-            <Link to={"about"}>About</Link>
-            <Link to={"contact"}>Contact</Link>
+            <Link to={""} className="hover:text-red-600">
+              Home
+            </Link>
+            <Link
+              to={"menu/6470d17db66fcb7572d2092d"}
+              className="hover:text-red-600"
+            >
+              Menu
+            </Link>
+            <Link to={"about"} className="hover:text-red-600">
+              About
+            </Link>
+            <Link to={"contact"} className="hover:text-red-600">
+              Contact
+            </Link>
           </nav>
           <div className="text-2xl text-slate-600 relative">
             <Link to={"cart"}>
@@ -66,13 +84,25 @@ const Header = () => {
                   </Link>
                 )}
 
-                {userData.image || userData.email ? (
-                  <p
-                    className="cursor-pointer text-white px-2 bg-red-400"
-                    onClick={handleLogout}
-                  >
-                    Logout {userData.firstName}{" "}
-                  </p>
+                {userData.email ? (
+                  <>
+                    <Link
+                      to={"myprofile"}
+                      className="cursor-pointer text-black px-2 bg-white "
+                    >
+                      MyProfile{" "}
+                    </Link>
+
+                    <p className="cursor-pointer text-black px-2 bg-white ">
+                      Transactions{" "}
+                    </p>
+                    <p
+                      className="cursor-pointer text-white px-2 bg-red-400"
+                      onClick={handleLogout}
+                    >
+                      Logout {userData.firstName}{" "}
+                    </p>
+                  </>
                 ) : (
                   <Link
                     to={"login"}
@@ -86,7 +116,7 @@ const Header = () => {
                     Home
                   </Link>
                   <Link
-                    to={"menu/63f0fdbb3bcc2f97fa53d25d"}
+                    to={"menu/6470d17db66fcb7572d2092d"}
                     className="px-2 py-1"
                   >
                     Menu
